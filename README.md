@@ -1,93 +1,148 @@
-[![Release](https://img.shields.io/pypi/v/gcaa?label=Release&style=flat-square)](https://pypi.org/project/gcaa/)
-[![CI](https://github.com/MartinBraquet/task-allocation-auctions/actions/workflows/ci.yml/badge.svg)](https://github.com/MartinBraquet/task-allocation-auctions/actions/workflows/ci.yml)
-[![CD](https://github.com/MartinBraquet/task-allocation-auctions/actions/workflows/cd.yml/badge.svg)](https://github.com/MartinBraquet/task-allocation-auctions/actions/workflows/cd.yml)
-[![Coverage](https://codecov.io/gh/MartinBraquet/task-allocation-auctions/graph/badge.svg?token=0YYZ2OSFZE)](https://codecov.io/gh/MartinBraquet/task-allocation-auctions)
-[![Downloads](https://static.pepy.tech/badge/gcaa)](https://pepy.tech/project/gcaa) 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+## 项目简介
 
-# Task Allocation using Auctions
+群智感知任务分配拍卖系统（Group Crowd-sensing Auction Allocation, GCAA）是一个用于动态任务与智能体分配的拍卖算法框架。该系统主要应用于多智能体系统中，通过拍卖机制实现任务与智能体的高效匹配与动态分配。
 
-Dynamic decentralized task allocation algorithms for multi-agent systems using a greedy auction algorithm. It's available in Matlab and Python.
+## 功能特性
 
-Official GitHub repository: https://github.com/MartinBraquet/task-allocation-auctions.
+- **动态任务分配**：支持任务和智能体的动态加入与离开
+- **拍卖机制**：基于拍卖理论实现高效的资源分配
+- **通信限制支持**：可模拟智能体间通信受限的真实场景
+- **仿真可视化**：提供任务分配过程的可视化模拟
+- **多种算法**：内置贪心算法等多种分配策略
+- **可扩展性**：支持自定义算法和仿真参数
 
-Master's research at The University of Texas at Austin in the research group of Efstathios Bakolas.
+## 项目结构
 
-The paper resulting from these simulations has been published at the Modeling, Estimation, and Control Conference (MECC 2021).
-
-To cite this work: 
-
-> Braquet, M. and Bakolas E., "Greedy Decentralized Auction-based Task Allocation for Multi-Agent Systems", *Modeling, Estimation and Control Conference (MECC)*, 2021.
-
-Official paper link: https://doi.org/10.1016/j.ifacol.2021.11.249.
-
-## Demo
-
-2D map of the dynamic task allocation (10 agents and 10 tasks) with associated reward, cost, and utility
-
-With limited communication:
-
-![Alt Text](https://martinbraquet.com/wp-content/uploads/Dynamic-Task-Agent-Allocation.gif)
-
-With free communication:
-
-![Alt Text](https://martinbraquet.com/wp-content/uploads/Dynamic-Task-Agent-Allocation-noLimit.gif)
-
-## Matlab
-
-In the [matlab](matlab) folder.
-
-* For the dynamic task allocation, run `OptimalControl_DTA.m`.
-* For the sensitivity analysis of the parameters, run `optimalControlParametersAnalysis.m`.
-
-To run the code in Matlab online: https://drive.matlab.com/sharing/f36a058f-99a4-4e38-a08e-0af800bd4ce8.
-
-## Python
-
-In the [gcaa](gcaa) folder.
-
-### Installation
-
-The Python package works on any major OS (Linux, Windows, and macOS) and with Python >= 3.11.
-
-The most straightforward way is to simply install it from PyPI via:
-```bash
-pip install gcaa
+```
+task-allocation-auctions/
+├── gcaa/                 # 主要功能模块
+│   ├── algorithms/       # 分配算法实现
+│   ├── core/             # 核心功能组件
+│   ├── simulations/      # 仿真结果文件
+│   └── tests/            # 单元测试
+├── exp-results/          # 实验结果
+├── img/                  # 可视化图像
+├── mov/                  # 动画演示
+├── sc/                   # 脚本文件
+├── scripts/              # 工具脚本
+├── pyproject.toml        # 项目配置
+├── pytest.ini            # 测试配置
+└── requirements.txt      # 依赖列表
 ```
 
-If you want to install it from source, which is necessary for development, follow the instructions [here](docs/installation.md).
+## 核心模块
 
-If some dependencies release changes that break the code, you can install the project from its lock file—which fixes the dependency versions to ensure reproducibility:
+### gcaa.algorithms
+实现了多种任务分配算法，目前包含贪心算法。
+
+### gcaa.core
+- **allocation.py**：分配核心逻辑
+- **control.py**：系统控制模块
+- **dta.py**：动态任务分配实现
+- **utility.py**：实用工具函数
+
+### gcaa.tools
+提供了多种辅助工具，包括数组处理、日期处理、绘图工具等。
+
+## 快速开始
+
+### 安装依赖
+
 ```bash
 pip install -r requirements.txt
 ```
 
-### Usage
+### 运行测试
 
-For the dynamic task allocation, run:
+```bash
+pytest -v
+```
+
+### 运行仿真
+
 ```python
-import gcaa
-gcaa.optimal_control_dta(
-    nt=4, # number of tasks
-    na=5, # number of agents
-    uniform_agents=False, # whether agents have an initial speed
-    n_rounds=20, # number of simulation rounds (precision vs compute time)
-    limited_communication=True, # whether communication is limited (True, False, or 'both')
-)
+# 导入必要的模块
+from gcaa.core.dta import DynamicTaskAllocation
+from gcaa.algorithms.greedy import GreedyAlgorithm
+
+# 创建任务分配实例
+dta = DynamicTaskAllocation(na=5, nt=5, algorithm=GreedyAlgorithm())
+
+# 运行仿真
+dta.run_simulation()
+
+# 可视化结果
+dta.visualize()
 ```
 
-The sensitivity analysis of the parameters isn't available in Python.
+## 算法介绍
 
-### Tests
+### 贪心算法
+贪心算法是一种基于局部最优选择的启发式算法，在每一步选择当前看起来最优的解，以期望通过局部最优选择得到全局最优解。在任务分配场景中，贪心算法会优先将任务分配给当前最合适的智能体。
 
-```shell
-pytest gcaa
+## 仿真结果
+
+系统提供了丰富的仿真结果可视化，包括：
+
+- 任务分配热力图
+- 智能体运动轨迹
+- 通信限制下的分配效果
+- 不同参数配置的对比分析
+
+## 应用场景
+
+- **无人机协同任务**：多无人机任务分配与路径规划
+- **传感器网络**：分布式传感器资源优化分配
+- **机器人协作**：多机器人系统任务调度
+- **交通管理**：智能交通系统中的车辆调度
+
+## 开发与扩展
+
+### 添加新算法
+
+```python
+from gcaa.algorithms import BaseAlgorithm
+
+class NewAlgorithm(BaseAlgorithm):
+    def allocate(self, agents, tasks):
+        # 实现自定义分配逻辑
+        pass
 ```
 
-### Feedback
+### 自定义仿真参数
 
-For any issue / bug report / feature request, open an [issue](https://github.com/MartinBraquet/task-allocation-auctions/issues).
+```python
+from gcaa.core.dta import DynamicTaskAllocation
 
-### Contributions
+# 配置仿真参数
+params = {
+    'na': 10,          # 智能体数量
+    'nt': 10,          # 任务数量
+    'communication_limit': 5,  # 通信限制
+    'speed': 2.0       # 智能体速度
+}
 
-To provide upgrades or fixes, open a [pull request](https://github.com/MartinBraquet/task-allocation-auctions/pulls).
+dta = DynamicTaskAllocation(**params)
+```
+
+## 贡献指南
+
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启 Pull Request
+
+
+## 更新日志
+
+### v1.0.0
+- 初始版本发布
+- 实现基本的动态任务分配功能
+- 支持贪心算法
+- 提供可视化工具
+
+---
+
+**备注**：本项目基于群智感知理论和拍卖机制，旨在为多智能体系统中的任务分配问题提供高效的解决方案。
+        
